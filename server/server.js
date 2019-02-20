@@ -18,6 +18,17 @@ app.get("/todos",(req,res)=>
     Todo.find().then((todos)=>{res.send({todos})},(e)=>{res.status(400).send(err)})
 );
 
+app.get("/todos/:id",(req,res)=>
+    Todo.find({_id: req.params.id}).then(
+        todo=>{
+            if(!todo){
+                return res.status(404).send();
+            }
+            res.send(todo);
+        },
+        err=>res.status(400).send(err))
+);
+
 app.listen(3000,()=>{
     console.log("Started server on port 3000");
 });
