@@ -1,10 +1,11 @@
 const {assert} = require("chai");
 const request = require("supertest");
+const {ObjectID} = require('mongodb');
 
 const {app} = require("./../server");
 const {Todo} = require("./../models/Todo");
 
-const todos = [{text:'First test todo'},{text:'Second test todo'},{text:'Third test todo'}]
+const todos = [{_id:new ObjectID(),text:'First test todo'},{_id:new ObjectID(),text:'Second test todo'},{_id:new ObjectID(),text:'Third test todo'}]
 
 // gets rid of all todo's
 beforeEach((done)=>{
@@ -49,6 +50,25 @@ describe("GET /todos", ()=>{
         request(app).get('/todos').expect(200).expect((res)=>{
             assert.equal(res.body.todos.length,3);
         })
+        .end(done);
+    });
+});
+
+describe("GET /todos:id", ()=>{
+    it("should get get requested todo doc",(done)=>{
+        request(app).get(`/todos/${todos[0]._id.toHexString()}`).expect(200).expect((res)=>{
+            assert.equal(res.body.todo.text,todos[0].text);
+        })
+        .end(done);
+    });
+
+    it("should return 404 if todo not found",(done)=>{
+        request(app).get(`/todos/${new ObjectID()}`).expect(404)
+        .end(done);
+    });
+
+    it("should return 400 if todo id is invalid",(done)=>{
+        request(app).get(`/todos/1}`).expect(404)
         .end(done);
     });
 });
