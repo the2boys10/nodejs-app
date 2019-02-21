@@ -8,6 +8,7 @@ const _ = require('lodash');
 
 var {mongoose} = require('./db/mongoose');
 mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 var {Todo} = require('./models/Todo');
 var {User} = require('./models/User');
 
@@ -77,6 +78,18 @@ app.patch("/todos/:id",(req,res)=>{
         err=>res.status(400).send(err)
     )
 });
+
+app.post("/users",(req,res)=>{
+    var userBody = _.pick(req.body, ['email','password']);
+    var user = new User(userBody);
+    user.save().then(()=>{
+        return user.generateAuthToken();
+    })
+    .then((token)=>{
+        res.header('x-auth', token).send(user);
+    },(err)=>{res.status(400).send(err)});
+});
+
 
 app.listen(port,()=>{
     console.log(`Started server on port ${port}`);
