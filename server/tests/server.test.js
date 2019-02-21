@@ -4,13 +4,11 @@ const {ObjectID} = require('mongodb');
 
 const {app} = require("./../server");
 const {Todo} = require("./../models/Todo");
-
-const todos = [{_id:new ObjectID(),text:'First test todo'},{_id:new ObjectID(),text:'Second test todo', completed:true, completedAt: 333},{_id:new ObjectID(),text:'Third test todo'}]
-
+const {User} = require("./../models/User");
+const {todos, users, populateTodos, populateUsers} = require('./seed/seed');
 // gets rid of all todo's
-beforeEach((done)=>{
-    Todo.deleteMany().then(()=>Todo.insertMany(todos)).then(()=>done());
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
 
 describe("POST /todos", ()=>{
     it("should create a new todo",(done)=>{
@@ -133,6 +131,62 @@ describe("PATCH /todos:id", ()=>{
 
     it("should return 400 if todo id is invalid",(done)=>{
         request(app).patch(`/todos/1}`).send({text:"abc2",completed:false}).expect(404)
+        .end(done);
+    });
+});
+
+describe("GET /users/me", ()=>{
+    it("should return user if authenticated",(done)=>{
+        request(app).get(`/users/me`).set('x-auth', users[0].tokens[0].token).expect(200).expect((res)=>{
+            assert.equal(res.body._id, users[0]._id.toHexString());
+            assert.equal(res.body._email,users[0]._email);
+        })
+        .end(done);
+    });
+
+    it("should return a 401 if not authenticated",(done)=>{
+        request(app).get(`/users/me`).expect(401).expect((res)=>{
+                assert(res.body,null);
+            })
+        .end(done);
+    });
+});
+
+
+describe("POST /users", ()=>{
+    it("should create a user",(done)=>{
+        var email = 'example@example.com';
+        var password = '123mnb!'
+        request(app).post(`/users`).send({email,password}).expect(200).expect((res)=>{
+            assert.equal(res.body.email,email);
+            assert.exists(res.headers['x-auth']);
+            assert.exists(res.body._id);
+        })
+        .end((err)=>{
+            if(err){
+                done(err);
+            }
+            User.findOne({email}).then((user)=>{
+                assert.exists(user);
+                assert.notDeepEqual(user.password,password)
+                done();
+            });
+        });
+    });
+
+    it("should return validation errors if request is invalid",(done)=>{
+        var email = 'example';
+        var password = '123m!'
+        request(app).post(`/users`).send({email,password}).expect(400).expect((res)=>{
+                assert(res.body,null);
+            })
+        .end(done);
+    });
+
+    it("should not create if email is in use",(done)=>{
+        request(app).post(`/users`).send({email:users[0].email,password:users[0].password}).expect(400).expect((res)=>{
+                assert(res.body,null);
+            })
         .end(done);
     });
 });
