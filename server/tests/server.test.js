@@ -55,7 +55,7 @@ describe("GET /todos", ()=>{
 });
 
 describe("GET /todos:id", ()=>{
-    it("should get get requested todo doc",(done)=>{
+    it("should get requested todo doc",(done)=>{
         request(app).get(`/todos/${todos[0]._id.toHexString()}`).expect(200).expect((res)=>{
             assert.equal(res.body.todo.text,todos[0].text);
         })
@@ -69,6 +69,28 @@ describe("GET /todos:id", ()=>{
 
     it("should return 400 if todo id is invalid",(done)=>{
         request(app).get(`/todos/1}`).expect(404)
+        .end(done);
+    });
+});
+
+describe("DELETE /todos:id", ()=>{
+    it("should delete requested todo doc",(done)=>{
+        request(app).delete(`/todos/${todos[0]._id.toHexString()}`).expect(200).expect((res)=>{
+            assert.equal(res.body.todo.text,todos[0].text);
+            Todo.findById(todos[0]._id.toHexString()).then((result)=>{
+                assert.equal(result,null);
+            }).catch(e=> done(e));
+        })
+        .end(done);
+    });
+
+    it("should return 404 if todo not found",(done)=>{
+        request(app).delete(`/todos/${new ObjectID()}`).expect(404)
+        .end(done);
+    });
+
+    it("should return 400 if todo id is invalid",(done)=>{
+        request(app).delete(`/todos/1}`).expect(404)
         .end(done);
     });
 });
