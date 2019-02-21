@@ -11,6 +11,7 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 var {Todo} = require('./models/Todo');
 var {User} = require('./models/User');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 
@@ -88,6 +89,10 @@ app.post("/users",(req,res)=>{
     .then((token)=>{
         res.header('x-auth', token).send(user);
     },(err)=>{res.status(400).send(err)});
+});
+
+app.get("/users/me",authenticate,(req,res)=>{
+   res.send(req.user);
 });
 
 
