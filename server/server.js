@@ -5,6 +5,7 @@ const port = process.env.PORT || 3000;
 const _ = require('lodash');
 
 var {mongoose} = require('./db/mongoose');
+mongoose.set('useFindAndModify', false);
 var {Todo} = require('./models/Todo');
 var {User} = require('./models/User');
 

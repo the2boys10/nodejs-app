@@ -23,11 +23,10 @@ const {ObjectID} = require('mongodb')
 //     console.log("Todo by id",todo);
 // }).catch(e=>console.log(e));
 
-// 5c6d6cc55467db3910358354
-var id = "5c6d844f2efd062528b06884";
-User.findById(id).then((user)=>{
-    if(!user){
-        return console.log("ID not found")
-    };
-    console.log("User with id",user);
-}).catch(e=>console.log(e));
+// var id = "5c6d844f2efd062528b06884";
+// User.findById(id).then((user)=>{
+//     if(!user){
+//         return console.log("ID not found")
+//     };
+//     console.log("User with id",user);
+// }).catch(e=>console.log(e));
