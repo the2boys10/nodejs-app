@@ -190,3 +190,38 @@ describe("POST /users", ()=>{
         .end(done);
     });
 });
+
+describe("POST /users/login", ()=>{
+    it("should login user and return auth token",(done)=>{
+        request(app).post(`/users/login`).send({email:users[0].email,password:users[0].password}).expect(200).expect((res)=>{
+            assert.equal(res.body.email,email);
+            assert.exists(res.headers['x-auth']);
+            assert.exists(res.body._id);
+        })
+        .end((err,res)=>{
+            if(err){
+                return done(err);
+            }
+            User.find({email:users[0].email}).then((user)=>{
+                assert.include(user[0].tokens[1], {access: 'auth', token: res.headers['x-auth']});
+                done();
+            }).catch(err=>done(err));
+        });
+    });
+
+    it("should reject invalid login",(done)=>{
+        var password = "123abcs"
+        request(app).post(`/users/login`).send({email:users[0].email,password}).expect(400).expect((res)=>{
+            assert.notExists(res.headers['x-auth']);
+        })
+        .end((err,res)=>{
+            if(err){
+                return done(err);
+            }
+            User.find({email:users[0].email}).then((user)=>{
+                assert.equal(user[0].tokens.length,1);
+                done();
+            }).catch(err=>done(err));
+        });
+    });
+});
