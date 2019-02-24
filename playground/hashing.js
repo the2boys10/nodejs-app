@@ -2,35 +2,41 @@ const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-var password = '123abc!';
+// var password = '123abc!';
 
-bcrypt.genSalt(10,(err, salt)=>{
-    bcrypt.hash(password,salt,(err, hash)=>{
-        console.log(hash);
-    });
-});
-
-
-var hashedPassword = '$2a$10$hY6QXcCjShyUpuBdP3TcEefSclJNcbpc403zfasWvoUahH4NlLaX.';
-bcrypt.compare("123abc!", hashedPassword,(err,res)=>{
-    console.log(res);
-});
+// bcrypt.genSalt(10,(err, salt)=>{
+//     bcrypt.hash(password,salt,(err, hash)=>{
+//         console.log(hash);
+//     });
+// });
 
 
+// var hashedPassword = '$2a$10$hY6QXcCjShyUpuBdP3TcEefSclJNcbpc403zfasWvoUahH4NlLaX.';
+// bcrypt.compare("123abc!", hashedPassword,(err,res)=>{
+//     console.log(res);
+// });
 
 
 
 
 
 
-// var data = {
-//     id: 10
-// };
 
-// var token = jwt.sign(data,'123abc');
-// console.log(token);
-// var decoded = jwt.verify(token,"123abc");
-// console.log('docoded',decoded);
+
+var data = {
+    id: 10
+};
+
+var data2 = {
+    id: 11
+};
+
+var token = jwt.sign(data,'123abc',{expiresIn:"5s"}).toString();
+var token2 = jwt.sign(data2,'123abc',{expiresIn:"5s"}).toString();
+console.log(token);
+setTimeout(()=>{var decoded = jwt.verify(token2,"123abc");
+console.log('docoded',decoded);
+},2000);
 
 
 

@@ -11,7 +11,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1', router);
 
 
-
 var {mongoose} = require('./db/mongoose');
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);

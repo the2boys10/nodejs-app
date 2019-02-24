@@ -2,15 +2,14 @@
     "swagger": "2.0",
     "info": {
       "version": "1.0.0",
-      "title": "Yet Another Node.js Blogg Application API",
-      "description": "Yet Another Node.js Blogg Application API",
+      "title": "Node udemy tutorial api",
+      "description": "Node udemy tutorial api",
       "license": {
         "name": "MIT",
         "url": "https://opensource.org/licenses/MIT"
       }
     },
     "host": "localhost:3000",
-    "basePath": "/api/v1",
     "tags": [
       {
         "name": "Users",
@@ -37,79 +36,36 @@
             {
               "name": "user",
               "in": "body",
+              "required": true,
               "description": "User that we want to create",
               "schema": {
                 "$ref": "#/definitions/User"
               }
             }
           ],
-          "produces": [
-            "application/json"
-          ],
           "responses": {
             "200": {
+              "headers": {
+                "x-auth": {
+                  "schema":{
+                    "type":"String"
+                  },
+                  "description":"The authorisation jwt token"
+                }
+              },
               "description": "New user is created",
               "schema": {
                 "$ref": "#/definitions/User"
               }
             }
-          }
-        },
-        "get": {
-          "tags": [
-            "Users"
-          ],
-          "summary": "Get all users in system",
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "$ref": "#/definitions/Users"
-              }
-            }
-          }
+          },
+          "produces": [
+            "application/json"
+          ]
         }
       },
-      "/users/{userId}": {
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "ID of user that we want to find",
-            "type": "string"
-          }
-        ],
-        "get": {
-          "tags": [
-            "Users"
-          ],
-          "summary": "Get user with given ID",
-          "responses": {
-            "200": {
-              "description": "User is found",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        },
-        "delete": {
-          "summary": "Delete user with given ID",
-          "tags": [
-            "Users"
-          ],
-          "responses": {
-            "200": {
-              "description": "User is deleted",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        },
-        "put": {
-          "summary": "Update user with give ID",
+      "/users/login": {
+        "post": {
           "tags": [
             "Users"
           ],
@@ -117,7 +73,8 @@
             {
               "name": "user",
               "in": "body",
-              "description": "User with new values of properties",
+              "required": true,
+              "description": "Email and password of the user",
               "schema": {
                 "$ref": "#/definitions/User"
               }
@@ -125,12 +82,23 @@
           ],
           "responses": {
             "200": {
-              "description": "User is updated",
+              "headers": {
+                "x-auth": {
+                  "schema":{
+                    "type":"String"
+                  },
+                  "description":"The authorisation jwt token"
+                }
+              },
+              "description": "New user is logged in",
               "schema": {
                 "$ref": "#/definitions/User"
               }
             }
-          }
+          },
+          "produces": [
+            "application/json"
+          ]
         }
       }
     },
@@ -138,21 +106,14 @@
       "User": {
         "required": [
           "email",
-          "_id"
+          "password"
         ],
         "properties": {
-          "_id": {
-            "type": "string",
-            "uniqueItems": true
-          },
           "email": {
             "type": "string",
             "uniqueItems": true
           },
-          "lastName": {
-            "type": "string"
-          },
-          "firstName": {
+          "password": {
             "type": "string"
           }
         }

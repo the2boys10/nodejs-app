@@ -31,14 +31,18 @@ var UserSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    createdAt: {type: Date, default: Date.now, expires: '1m'} 
 });
-
 
 UserSchema.methods.generateAuthToken = function() {
     var user = this;
     var access = 'auth';
-    var token = jwt.sign({_id: user._id.toHexString(),access}, process.env.JWT_SECRET).toString();
+    var signOptions = {
+        issuer: "Crowder consulting",
+        expiresIn: "1s",
+    }
+    var token = jwt.sign({_id: user._id.toHexString(),access}, process.env.JWT_SECRET,signOptions).toString();
     user.tokens = user.tokens.concat([{access,token}]);
 
     return user.save().then(()=>{
